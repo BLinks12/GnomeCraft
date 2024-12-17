@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Craft a Gnome - Enchanted ASCII Terminal</title>
+<style>
+    body {
+        background: #000;
+        color: #00ff00;
+        font-family: monospace;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        position: relative;
+    }
+
+    .container {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 20px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .top-runner {
+        position: absolute;
+        top: 0;
+        left: -50%;
+        white-space: nowrap;
+        pointer-events: none;
+        z-index: 2;
+        animation: movePhrase 10s linear infinite;
+        font-size: 14px;
+        color: #00ff00;
+    }
+
+    @keyframes movePhrase {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(200vw); }
+    }
+
+    .box {
+        border: 1px solid #00ff00;
+        padding: 10px;
+        margin-bottom: 20px;
+        position: relative;
+        animation: fadeIn 1s ease;
+    }
+
+    .box::after {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        border: 1px dashed #00ff00;
+        pointer-events: none;
+        opacity: 0.6;
+        animation: flickerBorder 2s linear infinite alternate;
+    }
+
+    @keyframes flickerBorder {
+        0% { opacity: 0.6; }
+        100% { opacity: 1; }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .hero {
+        margin-top: 50px;
+        text-align: center;
+    }
+
+    .hero h1 { font-size: 1.8em; }
+    .hero p { font-size: 0.95em; }
+    .hero .links { margin-top: 10px; }
+
+    .generator { text-align: center; }
+    .generator h2 { font-size: 1.2em; }
+    .generator input {
+        background: #000;
+        color: #00ff00;
+        border: 1px solid #00ff00;
+        padding: 5px;
+        width: 60%;
+        font-family: monospace;
+    }
+    .generator input:focus {
+        outline: none;
+        border-color: #0f0;
+    }
+    .generator button {
+        background: #000;
+        color: #00ff00;
+        border: 1px solid #00ff00;
+        padding: 5px 10px;
+        cursor: pointer;
+        font-family: monospace;
+        margin-left: 5px;
+        transition: background 0.2s;
+    }
+    .generator button:hover { background: #001900; }
+
+    .loading-container {
+        display: none;
+        text-align: center;
+        margin: 20px 0;
+    }
+    .loading-text { margin-top: 10px; font-size: 0.9em; }
+    .spinner {
+        width: 20px;
+        height: 20px;
+        border: 3px solid #000;
+        border-top: 3px solid #00ff00;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .gnome-showcase { text-align: center; }
+    .gnome-showcase h2 { font-size: 1.2em; }
+    .gnome {
+        display: inline-block;
+        background: #000;
+        border: 1px solid #00ff00;
+        padding: 10px;
+        text-align: left;
+        width: 280px;
+        white-space: pre;
+        margin: 20px 10px;
+        vertical-align: top;
+        animation: fadeIn 1s ease;
+        position: relative;
+    }
+
+    .gnome p {
+        margin: 5px 0;
+        line-height: 1.2;
+    }
+
+    .download-btn, .share-btn {
+        background: #000;
+        color: #00ff00;
+        border: 1px solid #00ff00;
+        padding: 3px 6px;
+        cursor: pointer;
+        font-family: monospace;
+        font-size: 0.9em;
+        margin-top: 5px;
+        margin-right: 5px;
+        display: inline-block;
+        transition: background 0.2s;
+    }
+    .download-btn:hover, .share-btn:hover {
+        background: #001900;
+    }
+
+    .info-section {
+        line-height: 1.4;
+    }
+
+    .info-section h2 {
+        font-size: 1.2em;
+        margin-bottom: 10px;
+    }
+
+    footer {
+        text-align: center;
+        font-size: 0.8em;
+        margin: 20px 0;
+    }
+
+</style>
+</head>
+<body>
+<div class="top-runner"><<< Craft Your Gnome Now >>></div>
+
+<div class="container">
+    <div class="hero box">
+        <h1>Craft Your Gnome</h1>
+        <p>Enter your Solana wallet address below and discover your unique Gnome hidden in an enchanted ASCII forest of code and secrets!</p>
+        <div class="links">
+            <a href="#gnome-lore">Gnome Lore & Myths</a>
+        </div>
+    </div>
+
+    <div class="generator box">
+        <h2>Your Gnome Workshop</h2>
+        <input type="text" id="wallet-address" placeholder="Enter your Solana wallet address...">
+        <button id="generate-button">Generate My Gnome</button>
+    </div>
+
+    <div class="loading-container" id="loading-container">
+        <div class="spinner"></div>
+        <p class="loading-text">Channeling forest spirits...</p>
+    </div>
+
+    <div class="gnome-showcase box" id="gnome-showcase">
+        <h2>Your Gnome</h2>
+        <!-- Gnome appears here -->
+    </div>
+
+    <div class="info-section box" id="gnome-lore">
+        <h2>Gnome Lore & Myths</h2>
+        <p>In these binary woods, Gnomes watch over whispering code streams. Their hats, beards, and garb speak of ancient protocols and lost packets of lore. They gather mushrooms that grow between keystrokes, and sing quiet tunes that only your terminal can hear.</p>
+        <p>Whisper to them, and they might bestow snippets of wisdom, a rare glyph, or a subtle algorithm. In the flicker of green text, their stories unfold, timeless and patient.</p>
+    </div>
+
+    <div class="info-section box" id="unique-generation">
+        <h2>Why Your Gnome is Unique</h2>
+        <p>Like primeval seeds scattered in cryptographic winds, your Gnome blooms uniquely from your Solana wallet address. No two sequences yield the same creature—each emerges singular, a small guardian of your digital domain.</p>
+        <p>Bound to your address, this ASCII companion stands as a testament to the synergy of code and creativity. Keep it, share it, treasure it; a tiny friend in the green-glowing grove of your terminal's mind.</p>
+    </div>
+
+    <footer>
+        © 2024 Craft a Gnome | Echoes of the Enchanted ASCII Grove
+    </footer>
+</div>
+
+<script>
+(function() {
+    const walletInput = document.getElementById('wallet-address');
+    const generateButton = document.getElementById('generate-button');
+    const gnomeShowcase = document.getElementById('gnome-showcase');
+    const loadingContainer = document.getElementById('loading-container');
+
+    const HATS = [
+        "Pointed Red Hat",
+        "Green Cap",
+        "Blue Wizard Hat",
+        "Straw Hat",
+        "Fancy Top Hat"
+    ];
+
+    const BEARDS = [
+        "Long White Beard",
+        "Short Brown Beard",
+        "Braided Gray Beard",
+        "No Beard",
+        "Curly Blonde Beard"
+    ];
+
+    const CLOTHING = [
+        "Forest Overalls",
+        "Mushroom Tunic",
+        "Leafy Cloak",
+        "Tiny Vest & Belt",
+        "Patchwork Robe"
+    ];
+
+    const ACCESSORIES = [
+        "Wooden Staff",
+        "Mushroom Basket",
+        "Lantern",
+        "Gardening Trowel",
+        "Acorn Pipe"
+    ];
+
+    const GNOME_CLANS = [
+        "Mossroot",
+        "Acornfoot",
+        "Dewberry",
+        "Fernfellow",
+        "Mushwisp",
+        "Oakburrow",
+        "Tansyleaf",
+        "Bramblethorn",
+        "Hazelgaze",
+        "Willowwhisper"
+    ];
+
+    function validateWalletAddress(address) {
+        const solanaAddressRegex = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+        return solanaAddressRegex.test(address);
+    }
+
+    function hashAddress(address) {
+        let hash = 0;
+        for (let i = 0; i < address.length; i++) {
+            const char = address.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // Convert to 32-bit integer
+        }
+        return Math.abs(hash);
+    }
+
+    function centerSymbol(sym) {
+        // We have 9 chars total inside parentheses, we must place sym centered.
+        // For single char: e.g. C or U, we can do `(   C   )`
+        // For beards like (~~~) we do `(  ~~~  )` 9 chars total.
+        // We'll define patterns for each type below.
+        return sym;
+    }
+
+    function generateGnome(hash) {
+        const hatIndex = hash % HATS.length;
+        const beardIndex = (hash >> 2) % BEARDS.length;
+        const clothingIndex = (hash >> 4) % CLOTHING.length;
+        const accessoryIndex = (hash >> 6) % ACCESSORIES.length;
+        const clanIndex = (hash >> 8) % GNOME_CLANS.length;
+        const charmLevel = (hash % 100) + 1;
+
+        const hat = HATS[hatIndex];
+        const beard = BEARDS[beardIndex];
+        const clothing = CLOTHING[clothingIndex];
+        const accessory = ACCESSORIES[accessoryIndex];
+        const clanName = GNOME_CLANS[clanIndex];
+
+        // Choose hat symbol (3 chars)
+        let hatChar;
+        if (hat.includes("Pointed")) hatChar = "^^^";
+        else if (hat.includes("Blue Wizard")) hatChar = "***";
+        else if (hat.includes("Fancy")) hatChar = "___";
+        else if (hat.includes("Straw")) hatChar = "~~~";
+        else hatChar = "---";
+
+        // Beard patterns (must fit in 9 chars total with parentheses)
+        let beardLine;
+        if (beard.includes("No Beard")) beardLine = "(       )"; // 7 spaces inside = total 9 chars
+        else if (beard.includes("Long") || beard.includes("Curly")) beardLine = "(  ~~~  )";
+        else if (beard.includes("Short")) beardLine = "(   '   )";
+        else if (beard.includes("Braided")) beardLine = "(  ><>) )"; 
+        // Count `(  ><>) )`: (=1 space=2 space=3 >=4 < =5 > =6 )=7 space=8 )=9 chars perfect.
+        else beardLine = "(       )";
+
+        // Accessory is single char centered:
+        let accChar;
+        if (accessory.includes("Staff")) accChar = "/";
+        else if (accessory.includes("Lantern")) accChar = "O";
+        else if (accessory.includes("Basket")) accChar = "U";
+        else if (accessory.includes("Trowel")) accChar = "T";
+        else accChar = "P"; // Acorn Pipe default
+        let accessoryLine = `(   ${accChar}   )`; // 3 spaces before and after = 9 chars total
+
+        // Clothing symbol:
+        let clothChar = clothing.includes("Mushroom") ? "🍄" : "*";
+        let clothingLine = `(  [${clothChar}]  )`; // 2 spaces before and after = 9 chars
+
+        // Eyes line `( o   o )`: ( o=3   =4 spaces o=5 ) total 9 chars
+        let eyesLine = `( o   o )`;
+
+        // Nose line `(   C   )`
+        let noseLine = `(   C   )`;
+
+        // Hat line `(  ^^^  )`
+        // We have 3 chars for hat, so `(  ^^^  )` 2 spaces before and after:
+        // Counting: (=1 space=2 space=3 ^=4 ^=5 ^=6 space=7 space=8 )=9 chars total.
+        let hatLine = `(  ${hatChar}  )`;
+
+        // Empty line `(       )` 7 spaces inside
+        let emptyLine = `(       )`;
+
+        // Feet line `( \---/ )` 1 space before \ and 1 space after /:
+        // Count `( \---/ )`: (=1 space=2 \=3 -=4 -=5 -=6 /=7 space=8 )=9 chars total perfect.
+        let feetLine = `( \\---/ )`;
+
+        const asciiArt = `
+${hatLine}
+${eyesLine}
+${noseLine}
+${beardLine}
+${accessoryLine}
+${clothingLine}
+${emptyLine}
+${feetLine}
+`;
+
+        return {
+            clanName,
+            hat,
+            beard,
+            clothing,
+            accessory,
+            charmLevel,
+            asciiArt
+        };
+    }
+
+    function showLoading() {
+        loadingContainer.style.display = 'block';
+        gnomeShowcase.innerHTML = '<h2>Your Gnome</h2>';
+    }
+
+    function hideLoading() {
+        loadingContainer.style.display = 'none';
+    }
+
+    function displayGnome(gnome) {
+        const gnomeCard = document.createElement('div');
+        gnomeCard.className = 'gnome';
+        gnomeCard.innerHTML = `
+${gnome.asciiArt}
+<p><strong>Gnome Clan:</strong> The ${gnome.clanName} Clan</p>
+<p><strong>Hat:</strong> ${gnome.hat}</p>
+<p><strong>Beard:</strong> ${gnome.beard}</p>
+<p><strong>Clothing:</strong> ${gnome.clothing}</p>
+<p><strong>Accessory:</strong> ${gnome.accessory}</p>
+<p><strong>Charm Level:</strong> ${gnome.charmLevel}/100</p>
+        `;
+
+        const downloadButton = document.createElement('button');
+        downloadButton.className = 'download-btn';
+        downloadButton.textContent = 'Download Gnome Details';
+        downloadButton.addEventListener('click', () => downloadGnome(gnome));
+
+        const shareButton = document.createElement('button');
+        shareButton.className = 'share-btn';
+        shareButton.textContent = 'Share on X';
+        shareButton.addEventListener('click', () => shareOnX(gnome));
+
+        gnomeCard.appendChild(downloadButton);
+        gnomeCard.appendChild(shareButton);
+
+        gnomeShowcase.appendChild(gnomeCard);
+    }
+
+    function downloadGnome(gnome) {
+        const gnomeDetails = `
+Gnome Details:
+--------------
+Clan: The ${gnome.clanName} Clan
+Hat: ${gnome.hat}
+Beard: ${gnome.beard}
+Clothing: ${gnome.clothing}
+Accessory: ${gnome.accessory}
+Charm Level: ${gnome.charmLevel}/100
+
+ASCII Art:
+${gnome.asciiArt}
+        `;
+
+        const blob = new Blob([gnomeDetails], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `${gnome.clanName}_Gnome.txt`;
+        link.click();
+    }
+
+    function shareOnX(gnome) {
+        const gnomeDetails = `I just crafted my unique ASCII Gnome! 🍄✨
+
+Clan: The ${gnome.clanName} Clan
+Hat: ${gnome.hat}
+Beard: ${gnome.beard}
+Clothing: ${gnome.clothing}
+Accessory: ${gnome.accessory}
+Charm: ${gnome.charmLevel}/100
+
+#CraftAGnome #GNOME #CryptoGnomes`;
+
+        const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(gnomeDetails)}`;
+        window.open(tweetUrl, '_blank');
+    }
+
+    generateButton.addEventListener('click', () => {
+        const walletAddress = walletInput.value.trim();
+
+        if (!validateWalletAddress(walletAddress)) {
+            alert('Please enter a valid Solana wallet address!');
+            return;
+        }
+
+        showLoading();
+
+        setTimeout(() => {
+            const hash = hashAddress(walletAddress);
+            const gnome = generateGnome(hash);
+
+            hideLoading();
+            displayGnome(gnome);
+        }, 2000);
+    });
+})();
+</script>
+</body>
+</html>
